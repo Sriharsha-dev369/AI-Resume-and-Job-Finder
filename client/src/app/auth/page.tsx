@@ -1,29 +1,37 @@
 'use client';
 
+interface AuthFormState {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 import { useState } from "react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useRouter } from 'next/navigation';
 import axios from "axios";
 
 export default function AuthForm() {
-  const navigate = useNavigate();
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<AuthFormState>({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [isLogin, setIsLogin] = useState(true);
+
 
   const client = axios.create({
     baseURL: "http://localhost:8000/api",
     withCredentials: true, // CRITICAL: This enables cookies to be sent/received
   });
 
-  const { pathname } = useLocation();
-  const isLogin = pathname === "/login";
 
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true); // Use the loading state
     setErrors({}); // Clear previous errors
@@ -47,29 +55,17 @@ export default function AuthForm() {
         },
       });
 
-      console.log(response);
-      navigate('/');
+  console.log(response);
+  // navigate to home after successful login/signup
+  router.push('/main/dashboard');
     } catch (error) {
       console.log('Full error:', error);
-      
-      // Handle different types of errors
-      if (error.response) {
-        // Server responded with error status
-        const errorMessage = error.response.data?.message || error.response.data?.error || 'Authentication failed';
-        setErrors({ general: errorMessage });
-      } else if (error.request) {
-        // Network error
-        setErrors({ general: 'Network error. Please check your connection.' });
-      } else {
-        // Other error
-        setErrors({ general: 'An unexpected error occurred.' });
-      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -86,7 +82,7 @@ export default function AuthForm() {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Record<string, string> = {};
     
     // Only validate username for signup
     if (!isLogin && !formData.username.trim()) {
@@ -179,12 +175,16 @@ export default function AuthForm() {
           {isLoading ? 'Loading...' : (isLogin ? "Login" : "Sign Up")}
         </button>
         
-        <p>
-          {isLogin ? "Need an account?" : "Already have an account?"}
-          <Link to={isLogin ? "/signup" : "/login"}>
-            {isLogin ? " Sign up" : " Login"}
-          </Link>
-        </p>
+        <p className="mt-4 text-sm">
+        {isLogin ? "Need an account?" : "Already have an account?"}{" "}
+        <button
+          type="button"
+          onClick={() => setIsLogin(!isLogin)}
+          className="text-blue-600 hover:underline"
+        >
+          {isLogin ? "Sign up" : "Login"}
+        </button>
+      </p>
       </form>
     </div>
   );
