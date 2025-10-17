@@ -1,16 +1,15 @@
-import jwt from "jsonwebtoken";
+const jwt = require('jsonwebtoken');
 
-export async function Authourization(req, res, next) {
-  const token = req.cookies.token;
-
-  if (!token) return res.status(401).json({ error: "no token provided" });
+function requireAuth(req: any, res: any, next:any) {
+  const token = req.cookies?.token;
+  if (!token) return res.status(401).json({ message: 'Not logged in' });
 
   try {
-    const decoded = jwt.verify(token, "SECRET");
-    req.userId = decoded.id;
+    req.user = jwt.verify(token, process.env.JWT_SECRET || '');
     next();
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
+  } catch {
+    return res.status(401).json({ message: 'Invalid token' });
   }
 }
 
+module.exports = requireAuth;

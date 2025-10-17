@@ -1,11 +1,11 @@
-import { basicInfoHandler } from './sectionHandlers/basicInfoHandler';
-import { experienceHandler } from './sectionHandlers/experienceHandler';
-import { educationHandler } from './sectionHandlers/educationHandler';
-import { skillsHandler } from './sectionHandlers/skillsHandler';
-import { projectsHandler } from './sectionHandlers/projectsHandler';
+const { basicInfoHandler } = require('./sectionHandlers/basicInfoHandler');
+const { experienceHandler } = require('./sectionHandlers/experienceHandler');
+const { educationHandler } = require('./sectionHandlers/educationHandler');
+const { skillsHandler } = require('./sectionHandlers/skillsHandler');
+const { projectsHandler } = require('./sectionHandlers/projectsHandler');
 
 
-export  async function parseResume(rawText:string) {
+async function parseResume(rawText:string) {
     try {
       
       // Segregate into sections
@@ -54,7 +54,7 @@ export  async function parseResume(rawText:string) {
 
   function detectSection(line: string): string | null {
     const sectionPatterns = {
-      basicInfo: /^(name|contact|personal|info|information|linkedIn|github|website|email|phone|address)/i,
+      basicInfo: /^(name|contact|linkedIn|github|website|email|phone|address)/i,
       experience: /^(work|experience|employment|professional)/i,
       education: /^(education|academic)/i,
       skills: /^(skills|technical|technologies)/i,
@@ -70,7 +70,7 @@ export  async function parseResume(rawText:string) {
     return null;
   }
 
-  async function processSections(sections: SectionMap): Promise<ParsedResume> {
+  async function processSections(sections: SectionMap): Promise<any> {
     return {
       basicInfo: await basicInfoHandler.process(sections.basicInfo),
       experience: await experienceHandler.process(sections.experience),
@@ -100,6 +100,8 @@ export interface SectionMap {
 //   projects: Project[];
 //   summary: string;
 // }
+
+module.exports = { parseResume };
 
 
 

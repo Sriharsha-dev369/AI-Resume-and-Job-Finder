@@ -1,5 +1,5 @@
-import {default as pdfparse} from 'pdf-parse'; // as the lib is exported in commonjs format
-import fs from 'fs';
+const pdfparse = require('pdf-parse'); // as the lib is exported in commonjs format
+const fs = require('fs');
 
 
 async function extractTextFromPdf(filepath: string):Promise<string>{
@@ -28,7 +28,9 @@ async function convertPdfToJson(filePath: string): Promise<Array<object>> {
     return jsonData;
 }
 
-// Example usage
-convertPdfToJson('path/to/your/file.pdf').then(json => {
-    console.log(JSON.stringify(json, null, 2));
-});
+// Example usage (commented out for server use)
+// convertPdfToJson('path/to/your/file.pdf').then(json => {
+//   console.log(JSON.stringify(json, null, 2));
+// });
+
+module.exports = { extractTextFromPdf, generateJsonData, convertPdfToJson };
