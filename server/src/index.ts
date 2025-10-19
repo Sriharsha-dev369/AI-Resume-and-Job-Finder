@@ -1,8 +1,11 @@
+require('dotenv').config();
+
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 // const tasks = require("./routes/taskRoutes");
 const auth = require("./routes/authRoutes");
+const pool = require("./db/index"); // Import the pool
 
 const app = express();
 const PORT = process.env.PORT || 5000;

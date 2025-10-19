@@ -1,15 +1,14 @@
-'use client';
+"use client";
 
 interface AuthFormState {
   username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+  phone: string;
 }
 
 import { useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import axios from "axios";
+import { Phone } from "lucide-react"; 
 
 export default function AuthForm() {
   const router = useRouter();
@@ -17,19 +16,14 @@ export default function AuthForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<AuthFormState>({
     username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    phone: "",
   });
   const [isLogin, setIsLogin] = useState(true);
 
-
   const client = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "http://localhost:5000/auth",
     withCredentials: true, // CRITICAL: This enables cookies to be sent/received
   });
-
-
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,12 +36,12 @@ export default function AuthForm() {
     }
 
     try {
-      const url = isLogin ? "/auth/login" : "/auth/signup";
-      
+      const url = isLogin ? "/login" : "signup";
+
       // Send only required fields for each endpoint
-      const requestData = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : { username: formData.username, email: formData.email, password: formData.password };
+      const requestData = isLogin
+        ? { phone: formData.phone }
+        : { username: formData.username, phone: formData.phone };
 
       const response = await client.post(url, requestData, {
         headers: {
@@ -55,11 +49,11 @@ export default function AuthForm() {
         },
       });
 
-  console.log(response);
-  // navigate to home after successful login/signup
-  router.push('/main/dashboard');
+      console.log(response);
+      // navigate to home after successful login/signup
+      router.push("/main/dashboard");
     } catch (error) {
-      console.log('Full error:', error);
+      console.log("Full error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -71,35 +65,26 @@ export default function AuthForm() {
       ...prev,
       [name]: value,
     }));
-    
+
     // Clear specific field error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     // Only validate username for signup
     if (!isLogin && !formData.username.trim()) {
       newErrors.username = "Username is required";
     }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    }
-    
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-    
-    // Only validate confirmPassword for signup
-    if (!isLogin && formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
     }
 
     setErrors(newErrors);
@@ -110,7 +95,7 @@ export default function AuthForm() {
     <div>
       <form onSubmit={handleSubmit}>
         {errors.general && (
-          <div style={{ color: 'red', marginBottom: '10px' }}>
+          <div style={{ color: "red", marginBottom: "10px" }}>
             {errors.general}
           </div>
         )}
@@ -127,11 +112,25 @@ export default function AuthForm() {
               value={formData.username}
               disabled={isLoading}
             />
-            {errors.username && <p style={{ color: 'red' }}>{errors.username}</p>}
+            {errors.username && (
+              <p style={{ color: "red" }}>{errors.username}</p>
+            )}
           </div>
         )}
 
-        <label htmlFor="email">Email:</label>
+        <label htmlFor="Phone no.">Phone no.:</label>
+        <input
+          type="text"
+          required
+          id="phone no."
+          onChange={handleChange}
+          name="phone no."
+          value={formData.phone}
+          disabled={isLoading}
+        />
+        {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
+
+        {/* <label htmlFor="email">Email:</label>
         <input
           type="email"
           required
@@ -153,9 +152,9 @@ export default function AuthForm() {
           value={formData.password}
           disabled={isLoading}
         />
-        {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
+        {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>} */}
 
-        {!isLogin && (
+        {/* {!isLogin && (
           <div>
             <label htmlFor="confirmpassword">Confirm password:</label>
             <input
@@ -169,22 +168,22 @@ export default function AuthForm() {
             />
             {errors.confirmPassword && <p style={{ color: 'red' }}>{errors.confirmPassword}</p>}
           </div>
-        )}
+        )} */}
 
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Loading...' : (isLogin ? "Login" : "Sign Up")}
+          {isLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
         </button>
-        
+
         <p className="mt-4 text-sm">
-        {isLogin ? "Need an account?" : "Already have an account?"}{" "}
-        <button
-          type="button"
-          onClick={() => setIsLogin(!isLogin)}
-          className="text-blue-600 hover:underline"
-        >
-          {isLogin ? "Sign up" : "Login"}
-        </button>
-      </p>
+          {isLogin ? "Need an account?" : "Already have an account?"}{" "}
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-blue-600 hover:underline"
+          >
+            {isLogin ? "Sign up" : "Login"}
+          </button>
+        </p>
       </form>
     </div>
   );
