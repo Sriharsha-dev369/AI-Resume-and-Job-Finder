@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
 const oauth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const { pool } = require('../db/index');
 
 const {
   GOOGLE_CLIENT_ID,
@@ -13,7 +14,6 @@ async function googleAuthCallback(req: any, res: any) {
 
   const code = req.query.code;
   try {
-    // Exchange code for tokens
     const tokenRes = await axios.post('https://oauth2.googleapis.com/token', new URLSearchParams({
       code,
       client_id: process.env.GOOGLE_CLIENT_ID || "",
@@ -26,7 +26,6 @@ async function googleAuthCallback(req: any, res: any) {
 
     const { id_token } = tokenRes.data;
 
-    // Verify token
     const ticket = await oauth2Client.verifyIdToken({
       idToken: id_token,
       audience: GOOGLE_CLIENT_ID
@@ -41,13 +40,19 @@ async function googleAuthCallback(req: any, res: any) {
       picture: payload.picture
     }, JWT_SECRET || '', { expiresIn: '30d' });
 
-    
+
     res.cookie('token', appToken, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000
     });
+
+    const {sub,email,name,picture} = payload;
+
+    const newUser = await pool.query(`INSERT INTO users (sub,email,name,picture)
+      VALUES ($1,$2,$3,$4)
+      RETURNING *`,[sub,email,name,picture]);
     res.redirect(`${FRONTEND_URL}`);
   } catch (err:any ) {
     console.error(err.response?.data || err.message);
@@ -56,5 +61,3 @@ async function googleAuthCallback(req: any, res: any) {
 }
 
 module.exports = { googleAuthCallback };
-
-// Middleware to check auth

@@ -15,4 +15,5 @@ pool.on("connect", () => {
   console.log("Connected to the database");
 });
 
-module.exports = pool;
+// const query = (text:string , params?:any[])=> pool.query(text,params);
+module.exports = {pool};

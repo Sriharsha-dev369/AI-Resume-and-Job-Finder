@@ -5,7 +5,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 // const tasks = require("./routes/taskRoutes");
 const auth = require("./routes/authRoutes");
-const pool = require("./db/index"); // Import the pool
+const pool = require("./db/index"); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,7 +25,6 @@ app.use(cookieParser());
 
 // app.use("/api/tasks", cors(corsOptions), tasks);
 app.use("/auth", cors(corsOptions), auth);
-
 
 
 app.listen(PORT, () => {

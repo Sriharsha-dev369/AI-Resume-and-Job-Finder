@@ -1,11 +1,11 @@
-const { pool } = require('../db/index');
+const { query } = require('../db/index');
 
-interface userData {
-    id?: number;
-    name: string;
-    email: string;
+interface userdata {
+    id: number,
+    username: string,
+    email: string,
+    picture: string
 }
-
 
 
 
