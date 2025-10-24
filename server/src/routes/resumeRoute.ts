@@ -7,6 +7,7 @@ const { resumeUpload } = require("");
 
 router.post(
   "/upload-resume",
+  Authentication,
   upload.single("pdf"),
   uploadAndStoreResume
 );

@@ -7,3 +7,13 @@ const errorHandler = (err: any, req: any, res: any, next: any) => {
   res.status(statusCode).json({ message });
 };
 module.exports = errorHandler;
+
+upload.single('resume'), // Error happens here if fileFilter rejects
+(err, req, res, next) => {  // Error handling middleware
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: err.message });
+  } else if (err) {
+    return res.status(400).json({ error: err.message });
+  }
+  next();
+}

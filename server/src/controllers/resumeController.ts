@@ -4,9 +4,18 @@ const { Pool } = require('pg');
 const { parseResume } = require('../lib/index'); // your parsing file
 
 const pool = new Pool();
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ storage: multer.memoryStorage() ,
+  limits:{filesize : 5*1024*1024},
+  fileFilter: (req: any, file: any, cb: any) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files are allowed'));
+    }
+  }
+});
 
-async function uploadAndStoreResume(req:any, res:any) {
+async function uploadAndStoreResume(req: any, res: any) {
   try {
     const userId = req.user.id;
     
