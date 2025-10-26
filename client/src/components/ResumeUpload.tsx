@@ -27,7 +27,7 @@ export default function UploadResume() {
     formData.append('pdf', file);
 
     try {
-      const response = await fetch('http://localhost:3000/api/resume/upload-resume', {
+      const response = await fetch('http://localhost:5000/api/resume/upload-resume', {
         method: 'POST',
         body: formData,
         credentials: 'include' // if using cookies for auth

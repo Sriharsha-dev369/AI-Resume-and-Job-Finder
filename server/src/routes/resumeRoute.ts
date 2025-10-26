@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { uploadAndStoreResume, upload } = require("../db/resumeUpload");
+const { uploadAndStoreResume, upload } = require("../controllers/resumeController");
 const { Authentication } = require("../middleware/auth");
 
-const { resumeUpload } = require("");
 
 router.post(
   "/upload-resume",

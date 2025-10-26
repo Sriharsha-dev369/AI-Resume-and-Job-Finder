@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const resume = require("./routes/resumeRoute");
 const auth = require("./routes/authRoutes");
+const page = require("./routes/pageRoutes");
 const pool = require("./db/index"); 
 
 const app = express();
@@ -23,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
+app.use(cors('/api',corsOptions,page));
 app.use("/api/resume", cors(corsOptions),resume);
 app.use("/auth", cors(corsOptions), auth);
 
