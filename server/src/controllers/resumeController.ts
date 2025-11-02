@@ -1,9 +1,9 @@
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
-const { Pool } = require('pg');
+const { pool } = require('../db/index');
 const { parseResume } = require('../lib/pdfParser'); // your parsing file
 
-const pool = new Pool();
+
 const upload = multer({ storage: multer.memoryStorage() ,
   limits:{filesize : 5*1024*1024},
   fileFilter: (req: any, file: any, cb: any) => {
@@ -26,6 +26,9 @@ async function uploadAndStoreResume(req: any, res: any) {
     // Parse using your existing handlers
     const parsedData = await parseResume(rawText);
     // console.log('Parsed Resume Data:', parsedData);
+    // console.log(parsedData);
+
+    console.log(parsedData)
     
     // Store in databaselll
     await pool.query(

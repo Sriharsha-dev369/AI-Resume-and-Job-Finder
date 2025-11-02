@@ -1,104 +1,148 @@
+const { callGroq } = require("../services/groq");
+
 interface ParsedResume {
-  name: string;
-  email: string;
-  phone: string;
-  experience: string;
-  education: string;
-  skills: string;
+  basicInfo: {
+    name: string;
+    email: string;
+    phone: string;
+    linkedin?: string;
+    github?: string;
+    website?: string;
+    address?: string;
+  };
+  experience: Array<{
+    role: string;
+    company: string;
+    duration: string;
+    description: string;
+  }>;
+  project: Array<{
+    name: string;
+    description: string;
+    technologies?: string[];
+    duration?: string;
+    link?: string;
+  }>;
+  education: Array<{
+    degree: string;
+    major: string;
+    institution: string;
+    location: string;
+    startDate: number;
+    endDate: number;
+    minor?: string;
+    gpa?: string;
+  }>;
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    date: string;
+    relevance: string;
+  }>;
+  achievements: Array<{
+    title: string;
+    issuer?: string;
+    date?: string;
+    description?: string;
+  }>;
+  skills: string[];
+  summary: string;
 }
 
 class ResumeParser {
-  
-  // Extract email using regex
-  private extractEmail(text: string): string {
-    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
-    const match = text.match(emailRegex);
-    return match ? match[0] : '';
-  }
+  async parse(rawText: string): Promise<ParsedResume> {
+    const prompt = `
+You are a structured resume parser. 
+Your job is to convert unstructured resume text into strictly valid JSON that matches this interface:
 
-  // Extract phone number using regex
-  private extractPhone(text: string): string {
-    const phoneRegex = /(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\d{10}/;
-    const match = text.match(phoneRegex);
-    return match ? match[0].replace(/\D/g, '') : '';
-  }
+interface ParsedResume {
+  basicInfo: {
+    name: string;
+    email: string;
+    phone: string;
+    linkedin?: string;
+    github?: string;
+    website?: string;
+    address?: string;
+  };
+  experience: Array<{
+    role: string;
+    company: string;
+    duration: string;
+    description: string;
+  }>;
+  project: Array<{
+    name: string;
+    description: string;
+    technologies?: string[];
+    duration?: string;
+    link?: string;
+  }>;
+  education: Array<{
+    degree: string;
+    major: string;
+    institution: string;
+    location: string;
+    startDate: number;
+    endDate: number;
+    minor?: string;
+    gpa?: string;
+  }>;
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    date: string;
+    relevance: string;
+  }>;
+  achievements: Array<{
+    title: string;
+    issuer?: string;
+    date?: string;
+    description?: string;
+  }>;
+  skills: string[];
+  summary: string;
+}
 
-  // Extract name (assumes first line or first 100 chars contain name)
-  private extractName(text: string): string {
-    const lines = text.split('\n').filter(line => line.trim().length > 0);
-    const firstLine = lines[0]?.trim() || '';
-    
-    // Remove email and phone if present in first line
-    return firstLine
-      .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '')
-      .replace(/(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, '')
-      .trim();
-  }
+Important extraction rules:
+1. **Projects**:
+   - If description contains "Tech Used:", "Tools:", "Technologies:", or similar phrases,
+     extract those as an array in \`technologies\`.
+   - Keep only tech/tool names, not full sentences.
+   - Example: "Tech Used: React, Node.js, MongoDB" → \`["React", "Node.js", "MongoDB"]\`.
+2. Keep description clean (remove the tech line if you already extracted it).
+3. If technologies are embedded inline (e.g., “Built with Python Flask and React”), 
+   infer them intelligently.
+4. Return **only JSON**, no markdown, no commentary.
 
-  // Extract section content based on common headers
-  private extractSection(text: string, sectionNames: string[]): string {
-    const lines:string[] = text.split('\n');
-    let inSection = false;
-    let sectionContent: string[] = [];
-    
-    // Common section headers that would end the current section
-    const allHeaders = [
-      'experience', 'work experience', 'employment', 'professional experience',
-      'education', 'academic background', 'qualifications',
-      'skills', 'technical skills', 'core competencies', 'expertise',
-      'projects', 'certifications', 'achievements', 'summary', 
-      'contact', 'awards', 'languages'
-    ];
+Resume text:
+${rawText}
+`;
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i]!.trim().toLowerCase();
-      
-      // Check if we've hit our target section
-      if (sectionNames.some(name => line?.includes(name.toLowerCase()))) {
-        inSection = true;
-        continue;
+    const response = await callGroq(prompt);
+
+    try {
+      const jsonString = response
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
+
+      const parsed = JSON.parse(jsonString);
+      // Optional: validate shape here (recommended for safety)
+      return parsed as ParsedResume;
+    } catch (e) {
+      let message = "Failed to parse structured resume JSON.";
+      if (e instanceof Error) {
+        message += ` Reason: ${e.message}`;
       }
-      
-      // Check if we've hit a different section (end current section)
-      if (inSection && allHeaders.some(header => 
-        line === header || line?.startsWith(header + ':') || line?.startsWith(header + ' ')
-      )) {
-        if (!sectionNames.some(name => line?.includes(name.toLowerCase()))) {
-          break;
-        }
-      }
-      
-      // Collect content if we're in the section
-      if (inSection && line && line.length > 0) {
-        sectionContent.push(line);
-      }
+      console.error("JSON parse failed:", message);
+      throw new Error(message); // 👈 Throw instead of returning invalid type
     }
-    
-    return sectionContent.join(' ').trim();
-  }
-
-  // Main parsing functionl
-  parse(rawText: string): ParsedResume {
-    const parsedData: ParsedResume = {
-      name: this.extractName(rawText),
-      email: this.extractEmail(rawText),
-      phone: this.extractPhone(rawText),
-      experience: this.extractSection(rawText, [
-        'experience', 'work experience', 'employment', 'professional experience'
-      ]),
-      education: this.extractSection(rawText, [
-        'education', 'academic background', 'qualifications'
-      ]),
-      skills: this.extractSection(rawText, [
-        'skills', 'technical skills', 'core competencies', 'expertise'
-      ])
-    };
-
-    return parsedData;
   }
 }
 
 async function parseResume(rawText: string): Promise<ParsedResume> {
+  console.log(rawText);
   const parser = new ResumeParser();
   return parser.parse(rawText);
 }

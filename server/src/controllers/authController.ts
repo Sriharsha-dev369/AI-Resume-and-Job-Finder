@@ -41,10 +41,14 @@ async function googleAuthCallback(req: any, res: any) {
     }, JWT_SECRET || '', { expiresIn: '30d' });
 
 
+    // Set cookie for entire site so it is sent to /api routes as well
+    // In production we use SameSite=None and Secure to allow cross-site requests
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('token', appToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      path: '/',
       maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
