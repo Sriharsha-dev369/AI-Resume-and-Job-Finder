@@ -1,19 +1,12 @@
 "use client";
 import { useState } from "react";
-import { LogOut, Moon, Sun, ChevronDown, ChevronUp } from "lucide-react";
+import { LogOut, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [dark, setDark] = useState(true);
-
   const pathname = usePathname();
-
-  const toggleTheme = () => {
-    document.documentElement.classList.toggle("dark");
-    setDark(!dark);
-  };
 
   return (
     <nav className="border-b">
@@ -24,8 +17,8 @@ export default function Navbar() {
             href="/main/dashboard"
             className={`p-2 rounded-sm ${
               pathname === "/main/dashboard"
-                ? "text-pink-600 bg-pink-50 dark:text-[#fb64b6] dark:bg-[#210d1c]"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800"
+                ? "text-[#fb64b6] bg-[#210d1c]"
+                : "text-gray-400 hover:text-white hover:bg-gray-800"
             }`}
           >
             Dashboard
@@ -34,8 +27,8 @@ export default function Navbar() {
             href="/main/ai-review"
             className={`p-2 rounded-sm ${
               pathname === "/main/ai-review"
-                ? "text-pink-600 bg-pink-50 dark:text-[#fb64b6] dark:bg-[#210d1c]"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800"
+                ? "text-[#fb64b6] bg-[#210d1c]"
+                : "text-gray-400 hover:text-white hover:bg-gray-800"
             }`}
           >
             AI review
@@ -44,8 +37,8 @@ export default function Navbar() {
             href="/main/jobs"
             className={`p-2 rounded-sm ${
               pathname === "/main/jobs"
-                ? "text-pink-600 bg-pink-50 dark:text-[#fb64b6] dark:bg-[#210d1c]"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800"
+                ? "text-[#fb64b6] bg-[#210d1c]"
+                : "text-gray-400 hover:text-white hover:bg-gray-800"
             }`}
           >
             Jobs
@@ -80,7 +73,7 @@ export default function Navbar() {
           <div className="relative">
             <button
               onClick={() => setOpen(!open)}
-              className="flex items-center gap-3 p-2 hover:bg-gray-400 dark:hover:bg-gray-800 focus:outline-none rounded-md"
+              className="flex items-center gap-3 p-2 hover:bg-gray-800 focus:outline-none rounded-md"
             >
               <img
                 alt="p"
@@ -97,20 +90,9 @@ export default function Navbar() {
             </button>
 
             {open && (
-              <div className="absolute left-0 mt-2 w-40 rounded-md border bg-white shadow-lg dark:bg-gray-900">
+              <div className="absolute left-0 mt-2 w-40 rounded-md border bg-gray-900 shadow-lg">
                 <button
-                  className="flex items-center text-sm w-full text-left gap-2 px-2 py-2 hover:bg-gray-400 dark:hover:bg-gray-800"
-                  onClick={() => toggleTheme()}
-                >
-                  {dark ? (
-                    <Sun className="h-5 w-5" />
-                  ) : (
-                    <Moon className="h-5 w-5" />
-                  )}
-                  <span>Toogle theme</span>
-                </button>
-                <button
-                  className="w-full p-2 text-sm text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="w-full p-2 text-sm text-left text-red-600 hover:bg-red-900/20"
                   onClick={() => alert("signing out")}
                 >
                   <LogOut className="inline mr-1.5 ml-0.5 h-5 w-5" />
