@@ -1,5 +1,8 @@
+'use client'
 import FormStepper from "@/components/FormStepper";
 import Navbar from "@/components/Navbar";
+
+import { useState } from 'react';
 
 export default function Editpage() {
   return (

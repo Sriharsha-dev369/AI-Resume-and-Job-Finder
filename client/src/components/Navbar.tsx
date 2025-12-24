@@ -10,35 +10,35 @@ export default function Navbar() {
 
   return (
     <nav className="border-b">
-      <div className="flex items-center gap-x-96 py-2 justify-center">
+      <div className="flex items-center gap-x-96 py-2 justify-center ml-35">
         {/* Left Nav */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <Link
             href="/main/dashboard"
-            className={`p-2 rounded-sm ${
+            className={`py-2 px-4 rounded-md ${
               pathname === "/main/dashboard"
                 ? "text-[#fb64b6] bg-[#210d1c]"
-                : "text-gray-400 hover:text-white hover:bg-gray-800"
+                : "text-gray-400 hover:text-white hover:bg-white/3 transition-colors"
             }`}
           >
             Dashboard
           </Link>
           <Link
             href="/main/ai-review"
-            className={`p-2 rounded-sm ${
+            className={`py-2 px-4 rounded-md ${
               pathname === "/main/ai-review"
                 ? "text-[#fb64b6] bg-[#210d1c]"
-                : "text-gray-400 hover:text-white hover:bg-gray-800"
+                : "text-gray-400 hover:text-white hover:bg-white/3 transition-colors"
             }`}
           >
             AI review
           </Link>
           <Link
             href="/main/jobs"
-            className={`p-2 rounded-sm ${
+            className={`py-2 px-4 rounded-md ${
               pathname === "/main/jobs"
                 ? "text-[#fb64b6] bg-[#210d1c]"
-                : "text-gray-400 hover:text-white hover:bg-gray-800"
+                : "text-gray-400 hover:text-white hover:bg-white/3 transition-colors"
             }`}
           >
             Jobs
@@ -46,40 +46,24 @@ export default function Navbar() {
         </div>
 
         {/* Right Nav */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] shadow-xs py-2 hidden sm:flex bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white h-9 px-4 text-sm"
+            className="items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] shadow-xs py-2 hidden sm:flex bg-[linear-gradient(to_right,#db2777,#9333ea)] hover:bg-[linear-gradient(to_right,#be185d,#7e22ce)] text-white h-9 px-4 text-sm"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-plus w-4 h-4 mr-1.5"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14"></path>
-              <path d="M12 5v14"></path>
-            </svg>
-            Create New
+           Create New 
           </Link>
 
           <div className="relative">
             <button
               onClick={() => setOpen(!open)}
-              className="flex items-center gap-3 p-2 hover:bg-gray-800 focus:outline-none rounded-md"
+              className="flex items-center gap-2 py-2 px-3 hover:bg-white/3 transition-colors focus:outline-none rounded-md"
             >
               <img
                 alt="p"
                 className="h-8 w-8 rounded-full object-cover bg-indigo-600"
               />
-              <span className="hidden sm:block font-medium text-sm max-w-32 truncate">
+              <span className="hidden sm:block font-medium text-sm max-w-32 truncate text-gray-400">
                 User name
               </span>
               {open ? (
@@ -90,9 +74,9 @@ export default function Navbar() {
             </button>
 
             {open && (
-              <div className="absolute left-0 mt-2 w-40 rounded-md border bg-gray-900 shadow-lg">
+              <div className="absolute right-0 mt-3 w-40 rounded-md border bg-gray-900 shadow-lg">
                 <button
-                  className="w-full p-2 text-sm text-left text-red-600 hover:bg-red-900/20"
+                  className="w-full p-2 text-sm text-left text-red-500 hover:bg-red-900/20"
                   onClick={() => alert("signing out")}
                 >
                   <LogOut className="inline mr-1.5 ml-0.5 h-5 w-5" />
