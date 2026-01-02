@@ -18,112 +18,120 @@ export default function EducationInfoForm({ isOpen, setOpen }: Props) {
       >
         <div className="flex items-center p-4 border-b bg-[#312c4a] rounded-t-2xl">
           <h2 className="text-left text-l font-bold text-white ">
-            Add Personal Info
+            Add Education 
           </h2>
         </div>
         <div className="p-4 m-1">
           <form
             method="post"
-            aria-labelledby="personal-info-heading"
+            aria-labelledby="education-info-heading"
             className="space-y-4"
           >
-            {/* First + Last Name */}
+            {/* School / University */}
+            <div>
+              <label
+                htmlFor="institution"
+                className="block text-sm font-medium"
+              >
+                School / University *
+              </label>
+              <input
+                id="institution"
+                name="institution"
+                type="text"
+                required
+                placeholder="Indian Institute of Technology, Delhi"
+                className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
+              />
+            </div>
+
+            {/* Degree + Minor */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="degree" className="block text-sm font-medium">
+                  Degree *
+                </label>
+                <input
+                  id="degree"
+                  name="degree"
+                  type="text"
+                  required
+                  placeholder="B.Tech in Computer Science"
+                  className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="minor" className="block text-sm font-medium">
+                  Minor (Optional)
+                </label>
+                <input
+                  id="minor"
+                  name="minor"
+                  type="text"
+                  placeholder="Artificial Intelligence"
+                  className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
+                />
+              </div>
+            </div>
+
+            {/* GPA + Location */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="gpa" className="block text-sm font-medium">
+                  GPA (Optional)
+                </label>
+                <input
+                  id="gpa"
+                  name="gpa"
+                  type="text"
+                  placeholder="8.5 / 10"
+                  className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="location" className="block text-sm font-medium">
+                  Location
+                </label>
+                <input
+                  id="location"
+                  name="location"
+                  type="text"
+                  placeholder="Delhi, India"
+                  className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
+                />
+              </div>
+            </div>
+
+            {/* Dates */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label
-                  htmlFor="firstName"
+                  htmlFor="startDate"
                   className="block text-sm font-medium"
                 >
-                  First name
+                  Start Date
                 </label>
                 <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  autoComplete="given-name"
-                  required
-                  placeholder="john"
+                  id="startDate"
+                  name="startDate"
+                  type="month"
                   className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
                 />
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium">
-                  Last name
+                <label htmlFor="endDate" className="block text-sm font-medium">
+                  Graduation Date
                 </label>
                 <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  autoComplete="family-name"
-                  required
-                  placeholder="doe"
+                  id="endDate"
+                  name="endDate"
+                  type="month"
                   className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
                 />
               </div>
-            </div>
-
-            {/* GitHub */}
-            <div>
-              <label htmlFor="github" className="block text-sm font-medium">
-                GitHub link
-              </label>
-              <input
-                id="github"
-                name="github"
-                type="text"
-                inputMode="url"
-                autoComplete="username"
-                placeholder="github.com/username"
-                className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
-              />
-            </div>
-
-            {/* LinkedIn */}
-            <div>
-              <label htmlFor="linkedin" className="block text-sm font-medium">
-                LinkedIn link
-              </label>
-              <input
-                id="linkedin"
-                name="linkedin"
-                type="text"
-                inputMode="url"
-                placeholder="linkedin.com/in/username"
-                className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder="john@example.com"
-                required
-                className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
-              />
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium">
-                Phone number
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                placeholder="(800) 555-0199"
-                inputMode="tel"
-                className="mt-1 w-full rounded-md border px-3 py-2 focus:ring-[#e7099d] focus:outline-none focus:ring-2"
-              />
             </div>
           </form>
         </div>
