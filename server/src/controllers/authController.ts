@@ -60,7 +60,7 @@ async function googleAuthCallback(req: any, res: any) {
     res.redirect(`${FRONTEND_URL}`);
   } catch (err:any ) {
     console.error(err.response?.data || err.message);
-    res.status(500).send('Login failed');
+    res.status(500).send(err.message ,'Login failed');
   }
 }
 

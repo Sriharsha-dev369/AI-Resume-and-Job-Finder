@@ -1,0 +1,3 @@
+//for google sub , etc...
+//login page should know about user info before login 
+//solve Google sub issue and login
