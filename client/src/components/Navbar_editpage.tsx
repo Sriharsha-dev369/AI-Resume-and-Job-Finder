@@ -1,3 +1,4 @@
+'use client';
 import Link from "next/link";
 import { ArrowLeft, Pencil ,Download} from "lucide-react";
 import { useState } from "react";

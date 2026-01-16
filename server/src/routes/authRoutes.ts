@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authenticate = require("../middleware/authenticate");
+const { Authentication } = require("../middleware/auth");
 
 const { generateGoogleAuthURL } = require("../utils/googleAuth");
 const { googleAuthCallback } = require("../controllers/authController");
@@ -16,7 +16,7 @@ router.get("/google", (req: any, res: any) => {
 
 router.get("/google/callback", googleAuthCallback);
 
-router.get("/me", authenticate, (req: any, res: any) => {
+router.get("/me", Authentication, (req: any, res: any) => {
   res.json({ user: req.user });
 });
 

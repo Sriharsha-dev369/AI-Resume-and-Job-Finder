@@ -16,6 +16,7 @@ async function Authentication(req:any, res:any, next:any) {
     // Just verify user exists and get their ID
     const userResult = await pool.query(
       'SELECT id FROM users WHERE sub = $1',
+      
       [decoded.sub]
     );
 
@@ -29,7 +30,7 @@ async function Authentication(req:any, res:any, next:any) {
       ...decoded
     };
     
-    console.log('Authenticated User:', req.user);
+    // console.log('Authenticated User:', req.user);
     next();
   } catch (error) {
     console.error('Auth error:', error);

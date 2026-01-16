@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { uploadAndStoreResume, upload } = require("../controllers/resumeController");
+const {
+  uploadAndStoreResume,
+  upload,
+  createResume,
+  addPersonalInfo
+} = require("../controllers/resumeController");
 const { Authentication } = require("../middleware/auth");
-
 
 router.post(
   "/upload-resume",
@@ -10,5 +14,8 @@ router.post(
   upload.single("pdf"),
   uploadAndStoreResume
 );
+
+router.post("/createResume", Authentication, createResume);
+router.post("/:resumeId/personal-info",Authentication,addPersonalInfo)
 
 module.exports = router;

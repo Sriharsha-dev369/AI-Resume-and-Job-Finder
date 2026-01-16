@@ -1,7 +1,7 @@
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const { pool } = require("../db/index");
-const { parseResume } = require("../lib/pdfParser"); // your parsing file
+const { parseResume } = require("../lib/pdfParser"); 
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -45,4 +45,43 @@ async function uploadAndStoreResume(req: any, res: any) {
   }
 }
 
-module.exports = { uploadAndStoreResume, upload };
+async function createResume(req: any, res: any) {
+  const userId = req.user.id;
+
+  try {
+    const existing = await pool.query(
+      `SELECT id FROM resumes WHERE user_id = $1 ORDER BY created_at LIMIT 1`,
+      [userId]
+    );
+
+    let resumeId;
+
+    if (existing.rows.length > 0) {
+      resumeId = existing.rows[0].id;
+    } else {
+      const created = await pool.query(
+        `INSERT INTO resumes (user_id,title,raw_parsed_data)
+        VALUES($1,$2,$3)
+        RETURNING id`,
+        [userId, "Untitled Resume", JSON.stringify({})]
+      );
+      resumeId = created.rows[0].id;
+    }
+    res.json({ resumeId });
+  } catch (err: any) {
+    console.error("Error creating resume:", err);
+    res.status(500).json({
+      error: "Failed to create Resume",
+      message: err.message,
+    });
+  }
+}
+
+async function addPersonalInfo(req:any,res:any){
+  const {resumeId} = req.params;
+  const {} = req.body;
+
+
+}
+
+module.exports = { uploadAndStoreResume, upload, createResume ,addPersonalInfo };

@@ -3,10 +3,27 @@ import { useState } from "react";
 import { LogOut, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {useRouter} from 'next/navigation';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleCreate = async ()=>{
+    const res = await fetch("http://localhost:5000/api/resume/createResume",{
+        method:"POST",
+        credentials:"include",
+    });
+
+    if(!res.ok){
+      return
+    }
+
+    const data = await res.json();
+
+    router.push(`/edit/${data.resumeId}`);
+  }
 
   return (
     <nav className="border-b">
@@ -47,12 +64,10 @@ export default function Navbar() {
 
         {/* Right Nav */}
         <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] shadow-xs py-2 hidden sm:flex bg-[linear-gradient(to_right,#db2777,#9333ea)] hover:bg-[linear-gradient(to_right,#be185d,#7e22ce)] text-white h-9 px-4 text-sm"
-          >
-           Create New 
-          </Link>
+          <button className="items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] shadow-xs py-2 hidden sm:flex bg-[linear-gradient(to_right,#db2777,#9333ea)] hover:bg-[linear-gradient(to_right,#be185d,#7e22ce)] text-white h-9 px-4 text-sm"
+          onClick={handleCreate}>
+            Create New
+          </button>
 
           <div className="relative">
             <button

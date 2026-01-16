@@ -1,12 +1,99 @@
 import { Plus, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 type Props = {
   isOpen: boolean;
   setOpen: (value: boolean) => void;
 };
 
+type projectFormData = {
+  projectName: string;
+  technologies: string;
+  projectLink: string;
+  startDate: string;
+  endDate: string;
+  bullets: string[];
+};
+
 export default function ProjectForm({ isOpen, setOpen }: Props) {
-  if (!isOpen) return null;
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState<projectFormData>({
+    projectName: "",
+    technologies: "",
+    projectLink: "",
+    startDate: "",
+    endDate: "",
+    bullets: [""],
+  });
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchProject = async () => {
+      try {
+        const res = await fetch("/api/resume/project");
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data) {
+          setFormData({
+            projectName: data.projectName || "",
+            technologies: data.technologies || "",
+            projectLink: data.projectLink || "",
+            startDate: data.startDate || "",
+            endDate: data.endDate || "",
+            bullets: data.bullets?.length ? data.bullets : [""],
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch project", err);
+      }
+    };
+
+    fetchProject();
+  }, [isOpen]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleBulletChange = (index: number, value: string) => {
+    const updated = [...formData.bullets];
+    updated[index] = value;
+    setFormData((prev) => ({ ...prev, bullets: updated }));
+  };
+
+  const addBullet = () =>
+    setFormData((prev) => ({ ...prev, bullets: [...prev.bullets, ""] }));
+
+  const removeBullet = (index: number) =>
+    setFormData((prev) => ({
+      ...prev,
+      bullets: prev.bullets.filter((_, i) => i !== index),
+    }));
+
+  const handleSubmit = async (e:React.FormEvent)=>{
+    setLoading(true);
+
+    try{
+      await fetch("api/resume",{
+        method: "POST",
+        headers:{"Content-Type" : "application/json"},
+        body:JSON.stringify(formData),
+      });
+      setOpen(false);
+    }catch(err){
+      console.error("Failed to save project" , err)
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  if(!isOpen) return null;
 
   return (
     <div
