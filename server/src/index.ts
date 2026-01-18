@@ -15,7 +15,7 @@ const PORT: number = parseInt(process.env.PORT || "5000", 10);
 const corsOptions: any = {
   origin: "http://localhost:3000",
   credentials: true,
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST","PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   optionsSuccessStatus: 200,
 };
@@ -32,16 +32,16 @@ app.use("/api", page);
 app.use("/api/resume", resume);
 app.use("/auth", auth);
 
-// Custom 404 handler
-app.use((req: any, res: any) => {
-  res.status(404).json({ error: `Route ${req.url} not found` });
-});
+// // Custom 404 handler
+// app.use((req: any, res: any) => {
+//   res.status(404).json({ error: `Route ${req.url} not found` });
+// });
 
-// Error handling
-app.use((err: any, req: any, res: any, next: any) => {
-  console.error("Server Error:", err);
-  res.status(500).json({ error: "Internal Server Error" });
-});
+// // Error handling
+// app.use((err: any, req: any, res: any, next: any) => {
+//   console.error("Server Error:", err);
+//   res.status(500).json({ error: "Internal Server Error" });
+// });
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

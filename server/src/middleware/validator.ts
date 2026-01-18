@@ -1,4 +1,3 @@
-import type { Request, Response, NextFunction } from 'express';
 const { z } = require("zod");
 
 const personalInfoSchema = z.object({
@@ -26,15 +25,28 @@ const personalInfoSchema = z.object({
   address: z.string().max(500).optional(),
 });
 
-const validate = (schema: z.ZodSchema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    try{
-        schema.parse(req.body);
-        next();
-    }catch(err){
-        
+const validate = (schema : any) => {
+  return (req: any, res:any, next:any) => {
+    try {
+      schema.parse(req.body);
+      next();
+    } catch (error: any) {
+      if (error?.errors) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation Error",
+          errors: error.errors.map((err:any) => ({
+            field: err.path.join("."),
+            message: err.message,
+          })),
+        });
+      }
+      // Pass non-Zod errors to the error handler
+      return next(error);
     }
   };
 };
 
-module.exports = { validate };
+const validatePersonalInfo = validate(personalInfoSchema);
+
+module.exports = { validate, validatePersonalInfo };

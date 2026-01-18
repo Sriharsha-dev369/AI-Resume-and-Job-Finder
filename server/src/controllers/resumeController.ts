@@ -1,7 +1,7 @@
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const { pool } = require("../db/index");
-const { parseResume } = require("../lib/pdfParser"); 
+const { parseResume } = require("../lib/pdfParser");
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -36,7 +36,7 @@ async function uploadAndStoreResume(req: any, res: any) {
        VALUES ($1, $2, $3)
        ON CONFLICT (user_id) 
        DO UPDATE SET parsed_data = $2, filename = $3, uploaded_at = CURRENT_TIMESTAMP`,
-      [userId, JSON.stringify(parsedData), req.file.originalname]
+      [userId, JSON.stringify(parsedData), req.file.originalname],
     );
 
     res.json({ success: true, data: parsedData });
@@ -51,7 +51,7 @@ async function createResume(req: any, res: any) {
   try {
     const existing = await pool.query(
       `SELECT id FROM resumes WHERE user_id = $1 ORDER BY created_at LIMIT 1`,
-      [userId]
+      [userId],
     );
 
     let resumeId;
@@ -63,7 +63,7 @@ async function createResume(req: any, res: any) {
         `INSERT INTO resumes (user_id,title,raw_parsed_data)
         VALUES($1,$2,$3)
         RETURNING id`,
-        [userId, "Untitled Resume", JSON.stringify({})]
+        [userId, "Untitled Resume", JSON.stringify({})],
       );
       resumeId = created.rows[0].id;
     }
@@ -77,11 +77,70 @@ async function createResume(req: any, res: any) {
   }
 }
 
-async function addPersonalInfo(req:any,res:any){
-  const {resumeId} = req.params;
-  const {} = req.body;
+async function getPersonalInfo(req: any, res: any) {
+  try {
+    const { resumeId } = req.params;
+    const result = await pool.query(
+      "SELECT * FROM resume_basic_info WHERE resume_id = $1",
+      [resumeId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(200).json({}); // Return empty object if not found
+    }
+    
+    res.status(200).json(result.rows[0]);
+  } catch (error:any) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
+async function addPersonalInfo(req: any, res: any) {
+  try {
+    const { resumeId } = req.params;
+    const { name, email, phone, linkedin, github, website, address } = req.body;
 
+    const existingInfo = await pool.query(
+      "SELECT id FROM resume_basic_info WHERE resume_id = $1",
+      [resumeId],
+    );
+
+    let result;
+
+    if (existingInfo.rows.length > 0) {
+      result = await pool.query(
+        "UPDATE resume_basic_info SET name = $1 ,email = $2, phone = $3, linkedin = $4, github = $5, website = $6, address = $7 WHERE resume_id = $8 RETURNING *",
+        [name, email, phone, linkedin, github, website, address, resumeId],
+      );
+    } else {
+      result = pool.query(
+        `INSERT INTO resume_basic_info
+      (resume_id , name , email , phone , linkedin , github , website , address)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      RETURNING *
+      `,
+        [resumeId, name, email, phone, linkedin, github, website, address],
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Personal info saved successfully",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error in add PersonalInfo',error);
+    return res.status(500).json({
+      success:false,
+      message:'Internal server error while saving personal info'
+    });
+  }
 }
 
-module.exports = { uploadAndStoreResume, upload, createResume ,addPersonalInfo };
+module.exports = {
+  uploadAndStoreResume,
+  upload,
+  createResume,
+  getPersonalInfo,
+  addPersonalInfo,
+};
